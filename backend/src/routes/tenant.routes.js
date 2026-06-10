@@ -8,8 +8,8 @@ router.use(authenticate);
 
 router.get('/', requireRoles('Admin'), ctrl.list);
 router.post('/', requireRoles('Admin'), ctrl.create);
-router.get('/:id', ctrl.getOne);
-router.put('/:id', ctrl.update);
+router.get('/:id', requireRoles('Admin'), ctrl.getOne);
+router.put('/:id', requireRoles('Admin'), ctrl.update);
 router.delete('/:id', requireRoles('Admin'), ctrl.remove);
 router.patch('/:id/move-out', requireRoles('Admin'), ctrl.moveOut);
 
