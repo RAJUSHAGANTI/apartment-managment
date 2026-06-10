@@ -60,20 +60,24 @@ const defaulters = (req, res, next) => {
   } catch (e) { next(e); }
 };
 
+const ALLOWED_REPORT_TYPES = new Set(['maintenance', 'expense', 'occupancy', 'defaulters']);
+
 const exportPDF = async (req, res, next) => {
   try {
-    const buf = await svc.exportPDF(req.query.type || 'maintenance', req.query);
+    const type = ALLOWED_REPORT_TYPES.has(req.query.type) ? req.query.type : 'maintenance';
+    const buf = await svc.exportPDF(type, req.query);
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${req.query.type}-report.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${type}-report.pdf"`);
     res.send(buf);
   } catch (e) { next(e); }
 };
 
 const exportExcel = async (req, res, next) => {
   try {
-    const buf = await svc.exportExcel(req.query.type || 'maintenance', req.query);
+    const type = ALLOWED_REPORT_TYPES.has(req.query.type) ? req.query.type : 'maintenance';
+    const buf = await svc.exportExcel(type, req.query);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${req.query.type}-report.xlsx"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${type}-report.xlsx"`);
     res.send(buf);
   } catch (e) { next(e); }
 };

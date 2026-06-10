@@ -3,7 +3,10 @@ const { serverError } = require('../utils/response.utils');
 const errorHandler = (err, req, res, next) => {
   console.error(err.stack);
   if (res.headersSent) return next(err);
-  serverError(res, err.message || 'Internal server error');
+  const message = process.env.NODE_ENV === 'production'
+    ? 'Internal server error'
+    : (err.message || 'Internal server error');
+  serverError(res, message);
 };
 
 const notFoundHandler = (req, res) => {

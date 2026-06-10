@@ -8,6 +8,9 @@ class BaseRepository {
   }
 
   findAll({ filters = {}, sort = 'id', order = 'ASC', page = 1, limit = 20 } = {}) {
+    const safeOrder = order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    const safeSortCol = /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(sort) ? sort : 'id';
+
     const conditions = ['is_deleted = 0'];
     const params = [];
 
@@ -26,7 +29,7 @@ class BaseRepository {
       .get(...params).count;
 
     const data = this.db
-      .prepare(`SELECT * FROM ${this.table} WHERE ${where} ORDER BY ${sort} ${order} LIMIT ? OFFSET ?`)
+      .prepare(`SELECT * FROM ${this.table} WHERE ${where} ORDER BY ${safeSortCol} ${safeOrder} LIMIT ? OFFSET ?`)
       .all(...params, limit, offset);
 
     return { data, pagination: buildPaginationMeta(total, page, limit) };
